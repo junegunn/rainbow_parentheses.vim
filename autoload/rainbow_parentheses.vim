@@ -166,6 +166,7 @@ function! rainbow_parentheses#activate(...)
   for level in range(1, s:max_level)
     let col = colors[(level - 1) % len(colors)]
     execute printf('hi rainbowParensShell%d %s', s:max_level - level + 1, col)
+    execute printf('hi rainbowArgSeps%d %s', s:max_level - level + 1, col)
   endfor
   call s:regions(s:max_level)
 
@@ -204,6 +205,7 @@ endfunction
 function! s:regions(max)
   let pairs = get(g:, 'rainbow#pairs', [['(',')']])
   for level in range(1, a:max)
+    execute printf('syntax match rainbowArgSeps%d %s containedin=rainbowParens%d contained', level, '_,_', level)
     let cmd = 'syntax region rainbowParens%d matchgroup=rainbowParensShell%d start=/%s/ end=/%s/ contains=%s'
     let children = extend(['TOP'], map(range(level, a:max), '"rainbowParens".v:val'))
     for pair in pairs
