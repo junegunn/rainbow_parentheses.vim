@@ -204,7 +204,7 @@ endfunction
 function! s:regions(max)
   let pairs = get(g:, 'rainbow#pairs', [['(',')']])
   for level in range(1, a:max)
-    let cmd = 'syntax region rainbowParens%d matchgroup=rainbowParensShell%d start=/%s/ end=/%s/ contains=%s'
+    let cmd = 'syntax region rainbowParens%d matchgroup=rainbowParensShell%d start=/%s/ end=/%s/ contains=%s,@Spell'
     let children = extend(['TOP'], map(range(level, a:max), '"rainbowParens".v:val'))
     for pair in pairs
       let [open, close] = map(copy(pair), 'escape(v:val, "[]/")')
