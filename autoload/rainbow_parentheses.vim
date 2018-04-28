@@ -204,7 +204,10 @@ function! rainbow_parentheses#toggle()
 endfunction
 
 function! s:regions(max)
-  let pairs = get(g:, 'rainbow#pairs', [['(',')']])
+    if exists('g:rainbow#pairs') && !exists('b:rainbow_pairs')
+        let b:rainbow_pairs = deepcopy(g:rainbow#pairs)
+    endif
+  let pairs = get(b:, 'rainbow_pairs', [['(',')']])
   for level in range(1, a:max)
       " XXX the @Spell stops identifiers from being spellchecked outside the
       " comments
