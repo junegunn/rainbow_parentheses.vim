@@ -165,14 +165,16 @@ function! rainbow_parentheses#activate(...)
 
   for level in range(1, s:max_level)
     let col = colors[(level - 1) % len(colors)]
-    execute printf('hi rainbowParensShell%d %s', s:max_level - level + 1, col)
+    execute printf('hi def rainbowParensShell%d %s', s:max_level - level + 1, col)
   endfor
   call s:regions(s:max_level)
 
   command! -bang -nargs=? -bar RainbowParenthesesColors call s:show_colors()
   augroup rainbow_parentheses
     autocmd!
-    autocmd ColorScheme,Syntax * call rainbow_parentheses#activate(1)
+    if get(g:, 'rainbow#auto', 1)
+        autocmd ColorScheme,Syntax * call rainbow_parentheses#activate(1)
+    endif
   augroup END
   let b:rainbow_enabled = s:generation
 endfunction
@@ -202,9 +204,14 @@ function! rainbow_parentheses#toggle()
 endfunction
 
 function! s:regions(max)
-  let pairs = get(g:, 'rainbow#pairs', [['(',')']])
+    if exists('g:rainbow#pairs') && !exists('b:rainbow_pairs')
+        let b:rainbow_pairs = deepcopy(g:rainbow#pairs)
+    endif
+  let pairs = get(b:, 'rainbow_pairs', [['(',')']])
   for level in range(1, a:max)
-    let cmd = 'syntax region rainbowParens%d matchgroup=rainbowParensShell%d start=/%s/ end=/%s/ contains=%s'
+      " XXX the @Spell stops identifiers from being spellchecked outside the
+      " comments
+    let cmd = 'syntax region rainbowParens%d matchgroup=rainbowParensShell%d start=/%s/ end=/%s/ contains=%s,@Spell'
     let children = extend(['TOP'], map(range(level, a:max), '"rainbowParens".v:val'))
     for pair in pairs
       let [open, close] = map(copy(pair), 'escape(v:val, "[]/")')
