@@ -57,12 +57,12 @@ endfunction
 " http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
 " http://alienryderflex.com/hsp.html
 function! s:brightness_(rgb)
-  let [max, min] = map([max(a:rgb), min(a:rgb)], 'v:val / 255.0')
-  let [r, g, b]  = map(a:rgb, 'v:val / 255.0')
+  let [max, min] = map([max(a:rgb), min(a:rgb)], 'v:val / str2float("255.0")')
+  let [r, g, b]  = map(a:rgb, 'v:val / str2float("255.0")')
   if max == min
-    return (max + min) / 2.0
+    return (max + min) / str2float('2.0')
   endif
-  return sqrt(0.299 * r * r + 0.587 * g * g + 0.114 * b * b)
+  return sqrt(str2float('0.299') * r * r + str2float('0.587') * g * g + str2float('0.114') * b * b)
 endfunction
 
 let s:brightness = {}
@@ -128,9 +128,9 @@ function! s:extract_colors()
     for cpair in colors
       let b = s:brightness(cpair)
       let diff = abs(nb - b)
-      if diff <= 0.25
+      if diff <= str2float('0.25')
         call add(first, cpair)
-      elseif diff <= 0.5
+      elseif diff <= str2float('0.5')
         call add(second, cpair)
       endif
     endfor
